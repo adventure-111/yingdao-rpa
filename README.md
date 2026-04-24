@@ -1,87 +1,60 @@
 # 影刀 RPA 技能库
 
-影刀 XBot 的 Python 自动化开发技能模板与 API 参考。
+Hermes Agent 的影刀自动化技能。接入后可以通过对话让 AI 帮你开发影刀 xbot 自动化脚本。
 
-## 内容结构
+## 这个技能能做什么
 
-```
-yingdao-rpa/
-├── SKILL.md              # 主技能文件（供 Hermes Agent 使用）
-├── README.md             # 本文件
-├── assets/
-│   └── default_module_template.py   # 标准模块模板
-└── references/
-    ├── _index.md         # 全部 API 索引（306个指令）
-    ├── api_summary.md    # 完整 API 速查手册
-    ├── feishu_bitable.md # 飞书多维表格（28个指令）
-    ├── troubleshooting.md # 11个高频问题与解法
-    ├── sop.md            # RPA开发SOP提示词
-    ├── web.md            # xbot.web 详解
-    ├── win32.md          # xbot.win32 详解
-    ├── excel.md          # xbot.excel 详解
-    ├── word.md           # xbot.word 详解
-    ├── mobile.md         # xbot.mobile 详解
-    ├── app.md            # xbot.app（数据表格/对话框）详解
-    ├── ai.md             # AI能力（OCR）详解
-    ├── guides.md         # 开发指南
-    └── other.md          # 剩余模块（ado/ftp/pdf/xzip）
-```
+当你描述一个业务流程，AI 可以帮你：
 
-## 快速开始
+- 生成完整的 xbot Python 模块代码（网页自动化、Excel/Word、桌面应用等）
+- 解答影刀开发中的问题（API 用法、元素定位、异常处理等）
+- 排查已有的代码问题
+- 协助新建影刀模块（创建 .py + 配置 .dev/main.flow.json）
 
-### 1. 新建一个影刀模块
+支持的功能模块：
 
-复制 `assets/default_module_template.py` 到你的影刀项目，作为新模块的起点。
-
-### 2. 核心规则
-
-- **入口函数**：`def main(args):`，不能用 `if __name__ == "__main__":`
-- **必须导入**：`xbot`、`print`、`sleep`、`package`
-- **查找指令**：完整清单见 `references/_index.md`，详细用法见对应 reference 文件
-- **元素选择**：用 `package.selector('元素名称')`，不要硬编码 xpath
-
-### 3. 常用模块一览
-
-| 模块 | 用途 |
+| 模块 | 说明 |
 |------|------|
-| `xbot.web` | 网页自动化（浏览器控制、元素操作） |
+| `xbot.web` | 网页自动化（登录、填表、爬数据等） |
 | `xbot.win32` | Windows 桌面应用自动化 |
-| `xbot.excel` | Excel 读、写、格式、公式 |
-| `xbot.word` | Word 文档操作 |
-| `xbot.mobile` | Android/iOS 移动端自动化 |
-| `xbot.app.databook` | 影刀数据表格读写 |
-| `xbot.app.dialog` | 消息/确认/通知对话框 |
-| `xbot.ai.*` | 阿里云/百度/腾讯 OCR |
+| `xbot.excel` | Excel 读写、公式、数据处理 |
+| `xbot.word` | Word 文档生成、修改 |
+| `xbot.mobile` | 手机 App 自动化 |
+| `xbot.app.databook` | 影刀数据表格 |
+| `xbot.ai` | OCR 文字识别（阿里/百度/腾讯） |
 | `xbot.pdf` | PDF 文本提取、合并 |
-| `xbot.ftp` | FTP 文件上传下载 |
-| `xbot.xzip` | 文件压缩解压 |
-| `xbot.ado` | 数据库 SQL 执行 |
-| `xbot_extensions.activity_feishu_bitable` | 飞书多维表格（28指令） |
+| `xbot.ftp` / `xbot.xzip` | 文件传输与压缩 |
+| `xbot_extensions.activity_feishu_bitable` | 飞书多维表格（28 个指令） |
 
-## 示例
+## 使用方式
 
-```python
-import xbot
-from xbot import print, sleep
-from . import package
-from .package import variables as glv
+在 Hermes 对话中直接描述你的需求，例如：
 
-def main(args):
-    # 打开 Excel 并读取数据
-    workbook = xbot.excel.open('D:\\data.xlsx', kind='office', visible=True)
-    try:
-        sheet = workbook.get_sheet_by_name('Sheet1')
-        value = sheet.get_cell(1, 'A')
-        print(f"读取到: {value}")
-        workbook.save()
-    finally:
-        workbook.close()
-```
+- "帮我写一个自动登录某网站并下载报表的影刀模块"
+- "我想把 Excel 里的数据同步到飞书多维表格"
+- "这个 xbot 代码报错了，帮我看看"
 
-## 查看完整指令清单
+**注意**：AI 开发完成后，需要把生成的代码复制到影刀客户端中使用。
 
-所有 306 个指令的完整索引在 `references/_index.md`，包含每个指令的名称、参数和简要说明。
+## 示例对话
 
-## 官方文档
+**你**：我想做一个自动抓取淘宝订单的 RPA
 
-https://www.yingdao.com/yddoc/rpa/zh-CN/
+**AI**：（询问抓取字段、登录方式、数据去向等）→ 确认需求后生成代码
+
+**你**：帮我把这个模板改成支持批量处理
+
+**AI**：修改代码并解释改动点
+
+## 触发条件
+
+当你在对话中提到以下内容时，技能会自动激活：
+
+- 影刀、xbot、自动化模块
+- Excel/网页自动化
+- RPA、机器人流程自动化
+- 开发影刀应用模块
+
+## 反馈问题
+
+如发现 API 描述与影刀实际行为不符，或缺少常用指令，请提交 Issue。
